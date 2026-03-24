@@ -101,7 +101,7 @@
       Paste the code below and submit
     </div>
 
-    <form action="/auth/callback" method="GET">
+    <form action="callback" method="GET">
       <div class="form-group">
         <label for="codeInput">Authorization Code:</label>
         <input
@@ -120,12 +120,17 @@
     document.getElementById('authButton').addEventListener('click', async function(e) {
       e.preventDefault();
 
-      // Get the auth URL from the server
-      const response = await fetch('/auth/get-url');
+      // Open window synchronously so mobile Safari doesn't block the popup
+      const newWindow = window.open('', '_blank');
+
+      // Get the auth URL from the server using a relative path (works behind any reverse proxy prefix)
+      const response = await fetch('get-url');
       const data = await response.json();
 
-      if (data.url) {
-        window.open(data.url, '_blank');
+      if (data.url && newWindow) {
+        newWindow.location.href = data.url;
+      } else if (newWindow) {
+        newWindow.close();
       }
     });
   </script>
