@@ -210,7 +210,7 @@ async function handleRequest(req, res) {
         <body>
           <h1>Authentication Failed</h1>
           <p>Error: ${error.message}</p>
-          <p><a href="/auth/login">Try again</a></p>
+          <p><a href="login">Try again</a></p>
         </body>
         </html>
       `);
