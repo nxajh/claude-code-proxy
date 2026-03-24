@@ -257,6 +257,18 @@ async function handleRequest(req, res) {
   }
   
   if (req.method === 'POST' && (pathname === '/v1/messages' || pathname.match(/^\/v1\/\w+\/messages$/))) {
+    if (config.proxy_api_key) {
+      const authHeader = req.headers['authorization'];
+      const apiKeyHeader = req.headers['x-api-key'];
+      const provided = (authHeader && authHeader.startsWith('Bearer ')
+        ? authHeader.slice(7)
+        : apiKeyHeader) || '';
+      if (provided !== config.proxy_api_key) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized: invalid proxy API key' }));
+        return;
+      }
+    }
     try {
       Logger.debug('Incoming request headers:', JSON.stringify(req.headers, null, 2));
       const body = await parseBody(req);
